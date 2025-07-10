@@ -11,7 +11,8 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 
 DEBUG = os.getenv('DEBUG', False)
 
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', ['infrasprint1main.ddns.net'])
+ALLOWED_HOSTS = ['infrasprint1main.ddns.net', 'localhost', '127.0.0.1']
+CSRF_TRUSTED_ORIGINS = ['https://infrasprint1main.ddns.net:8443']
 
 INSTALLED_APPS = [
     'django.contrib.admin',

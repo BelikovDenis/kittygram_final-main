@@ -1,14 +1,17 @@
-#version: '3'
+version: '3.8'
+
 volumes:
   pg_data:
   static:
   media:
+
 services:
   db:
     image: postgres:13.10
     env_file: .env
     volumes:
       - pg_data:/var/lib/postgresql/data
+
   backend:
     image: denisbelikov/kittygram_backend
     env_file: .env
@@ -17,19 +20,24 @@ services:
       - media:/app/media
     depends_on:
       - db
+
   frontend:
-    env_file: .env
     image: denisbelikov/kittygram_frontend
+    env_file: .env
     command: cp -r /app/build/. /static/
     volumes:
       - static:/static
+
   gateway:
-  image: denisbelikov/kittygram_gateway
-  env_file: .env
-  ports:
-    - "80:80"
-    - "443:443"
-  volumes:
-    - static:/static
-    - media:/media
-    - /etc/letsencrypt:/etc/letsencrypt:ro
+    image: denisbelikov/kittygram_gateway
+    env_file: .env
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - static:/static
+      - media:/media
+      - /etc/letsencrypt:/etc/letsencrypt:ro
+    depends_on:
+      - backend
+      - frontend
