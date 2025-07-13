@@ -1,6 +1,5 @@
 import os
 from pathlib import Path
-
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -9,17 +8,23 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.getenv('SECRET_KEY')
 
-DEBUG = os.getenv('DEBUG', False)
+# Преобразование DEBUG в булево значение
+DEBUG = os.getenv('DEBUG', 'False').lower() in ('true', '1', 'yes')
 
-#  ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', ['*'])
-if DEBUG:
-    ALLOWED_HOSTS = ['*']
+# Улучшенная обработка ALLOWED_HOSTS
+allowed_hosts = os.getenv('ALLOWED_HOSTS')
+if allowed_hosts:
+    # Удаление кавычек и пробелов, разбиение по запятым
+    ALLOWED_HOSTS = [
+        host.strip().strip('\'"') 
+        for host in allowed_hosts.split(',')
+        if host.strip()
+    ]
 else:
-    ALLOWED_HOSTS = [host.strip() for host in os.getenv('ALLOWED_HOSTS', '').split(',') if host.strip()]
+    ALLOWED_HOSTS = []  # По умолчанию пустой список
 
 # Для работы за reverse proxy
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-CSRF_TRUSTED_ORIGINS = ['https://infrasprint1main.ddns.net']
 
 INSTALLED_APPS = [
     'django.contrib.admin',
