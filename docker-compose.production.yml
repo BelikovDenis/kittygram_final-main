@@ -10,6 +10,7 @@ services:
     volumes:
       - pg_data:/var/lib/postgresql/data
   backend:
+    command: gunicorn --bind 0.0.0.0:8000 kittygram_backend.wsgi
     image: denisbelikov/kittygram_backend
     env_file: .env
     volumes:
