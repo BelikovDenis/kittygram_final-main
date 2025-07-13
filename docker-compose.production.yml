@@ -35,6 +35,8 @@ services:
     volumes:
       - static:/static
   gateway:
+    extra_hosts:
+      - "infrasprint1main.ddns.net:host-gateway"
     networks:
       - kittygram-net
     image: denisbelikov/kittygram_gateway
