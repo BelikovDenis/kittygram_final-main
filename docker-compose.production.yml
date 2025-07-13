@@ -1,15 +1,23 @@
 version: '3'
+networks:
+  kittygram-net:
+    driver: bridge
+
 volumes:
   pg_data:
   static:
   media:
 services:
   db:
+    networks:
+      - kittygram-net
     image: postgres:13.10
     env_file: .env
     volumes:
       - pg_data:/var/lib/postgresql/data
   backend:
+    networks:
+      - kittygram-net
     command: gunicorn --bind 0.0.0.0:8000 kittygram_backend.wsgi
     image: denisbelikov/kittygram_backend
     env_file: .env
@@ -19,19 +27,25 @@ services:
     depends_on:
       - db
   frontend:
+    networks:
+      - kittygram-net
     env_file: .env
     image: denisbelikov/kittygram_frontend
     command: cp -r /app/build/. /static/
     volumes:
       - static:/static
   gateway:
+    networks:
+      - kittygram-net
     image: denisbelikov/kittygram_gateway
     env_file: .env
     ports:
-      - 9000:80
+    - 80:80
+    - 443:443 
     volumes:
-      - static:/static
-      - media:/media
+    - static:/static
+    - media:/media
+    - ./certs:/etc/letsencrypt:ro 
     depends_on:
       - backend
       - frontend

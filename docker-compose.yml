@@ -1,37 +1,47 @@
-version: '3'
-
 volumes:
   pg_data:
-  static:
+  backend_static:
   media:
+
 services:
   db:
     image: postgres:13.10
     env_file: .env
     volumes:
       - pg_data:/var/lib/postgresql/data
+
   backend:
+    networks:
+      - kittygram-net
     build: ./backend/
     env_file: .env
     volumes:
-      - static:/backend_static
+      - backend_static:/backend_static
       - media:/app/media
     command: python manage.py runserver 0.0.0.0:8000
     depends_on:
       - db
+
   frontend:
+    networks:
+      - kittygram-net
     env_file: .env
     build: ./frontend/
-    command: cp -r /app/build/. /static/
     volumes:
-      - static:/static
+      - backend_static:/backend_static
+    command: sh -c "npm run build && cp -r /app/build/* /backend_static/"
+
   gateway:
+    extra_hosts:
+    - "infrasprint1main.ddns.net:host-gateway"
+    networks:
+      - kittygram-net
     build: ./nginx/
     env_file: .env
     ports:
       - 8000:80
     volumes:
-      - static:/static
+      - backend_static:/backend_static
       - media:/media
     depends_on:
       - backend
