@@ -12,7 +12,14 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 DEBUG = os.getenv('DEBUG', False)
 
 #  ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', ['*'])
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
+if DEBUG:
+    ALLOWED_HOSTS = ['*']
+else:
+    ALLOWED_HOSTS = [host.strip() for host in os.getenv('ALLOWED_HOSTS', '').split(',') if host.strip()]
+
+# Для работы за reverse proxy
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+CSRF_TRUSTED_ORIGINS = ['https://infrasprint1main.ddns.net']
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -100,7 +107,7 @@ USE_TZ = True
 
 
 STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'collected_static')
+STATIC_ROOT = BASE_DIR / 'collected_static'
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
@@ -127,3 +134,8 @@ DJOSER = {
         'user_create': 'djoser.serializers.UserCreateSerializer',
     }
 }
+
+CSRF_TRUSTED_ORIGINS = [
+    'https://infrasprint1main.ddns.net',
+    'http://localhost'
+]
