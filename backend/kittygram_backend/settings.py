@@ -14,14 +14,14 @@ DEBUG = os.getenv('DEBUG', 'False').lower() in ('true', '1', 'yes')
 # Улучшенная обработка ALLOWED_HOSTS
 allowed_hosts = os.getenv('ALLOWED_HOSTS')
 if allowed_hosts:
-    # Удаление кавычек и пробелов, разбиение по запятым
     ALLOWED_HOSTS = [
         host.strip().strip('\'"') 
         for host in allowed_hosts.split(',')
         if host.strip()
     ]
 else:
-    ALLOWED_HOSTS = []  # По умолчанию пустой список
+    # Безопасное значение по умолчанию для production
+    ALLOWED_HOSTS = ['infrasprint1main.ddns.net', 'localhost']
 
 # Для работы за reverse proxy
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
