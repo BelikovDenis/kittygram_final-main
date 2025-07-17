@@ -20,7 +20,7 @@ services:
     command: >
       bash -c "python manage.py migrate &&
                python manage.py collectstatic --no-input &&
-               gunicorn kittygram_backend.wsgi --bind 0.0.0.0:9000"
+               gunicorn kittygram_backend.wsgi --bind 0.0.0.0:8000"
     env_file: .env
     volumes:
       - static_volume:/app/static/
@@ -45,7 +45,7 @@ services:
       - static_volume:/staticfiles/
       - media_volume:/mediafiles/
     ports:
-      - "9000:80"
+      - "8000:80"
     depends_on:
       - backend
       - frontend
