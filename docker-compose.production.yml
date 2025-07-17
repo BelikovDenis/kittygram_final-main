@@ -1,43 +1,51 @@
-version: '3'
-
 volumes:
-  pg_data:
-  static:
-  media:
+  pg_data_production:
+  static_volume:
+  media_volume:
 
 services:
-  postgres:
+  db:
     image: postgres:13
     env_file: .env
     volumes:
-      - pg_data:/var/lib/postgresql/data
+      - pg_data_production:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
-  kittygram_backend:
-    depends_on:
-      - postgres
+  backend:
     image: denisbelikov/kittygram_backend
-    container_name: kittygram_backend
+    command: >
+      bash -c "python manage.py migrate &&
+               python manage.py collectstatic --no-input &&
+               gunicorn kittygram_backend.wsgi --bind 0.0.0.0:9000"
     env_file: .env
     volumes:
-      - static:/app/backend_static/static
-      - media:/app/media
-
-  kittygram_frontend:
-    container_name: kittygram_frontend
-    env_file: .env
-    image: denisbelikov/kittygram_frontend
-    volumes:
-      - static:/app/build
-
-  kittygram_gateway:
-    container_name: kittygram_gateway
-    image: denisbelikov/kittygram_gateway
-    restart: always
-    ports:
-      - 80:80
+      - static_volume:/app/static/
+      - media_volume:/app/media/
     depends_on:
-      - kittygram_backend
-      - kittygram_frontend
+      db:
+        condition: service_healthy
+    environment:
+      - DEBUG=${DEBUG:-False}
+      - ALLOWED_HOSTS=${ALLOWED_HOSTS:-backend,localhost}
+
+  frontend:
+    image: denisbelikov/kittygram_frontend
+    env_file: .env
+    command: cp -r /app/build/. /staticfiles/
     volumes:
-      - static:/static
-      - media:/media
+      - static_volume:/staticfiles/
+
+  gateway:
+    image: denisbelikov/kittygram_gateway
+    volumes:
+      - static_volume:/staticfiles/
+      - media_volume:/mediafiles/
+    ports:
+      - "9000:80"
+    depends_on:
+      - backend
+      - frontend
