@@ -30,7 +30,7 @@ services:
         condition: service_healthy
     environment:
       - DEBUG=${DEBUG:-False}
-      - ALLOWED_HOSTS=${ALLOWED_HOSTS:-backend,localhost}
+      - ALLOWED_HOSTS=${ALLOWED_HOSTS:-infrasprint1main.ddns.net,backend,localhost}
 
   frontend:
     image: denisbelikov/kittygram_frontend
