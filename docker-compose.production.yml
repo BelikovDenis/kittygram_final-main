@@ -22,6 +22,7 @@ services:
       - db
     environment:
       - SECRET_KEY=${SECRET_KEY}
+    command: sh -c "python manage.py migrate && gunicorn --bind 0.0.0.0:9000 kittygram_backend.wsgi"
 
   frontend:
     image: denisbelikov/kittygram_frontend
