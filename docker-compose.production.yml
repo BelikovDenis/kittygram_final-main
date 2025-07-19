@@ -29,7 +29,7 @@ services:
   frontend:
     image: denisbelikov/kittygram_frontend
     env_file: .env
-    command: mkdir -p /static/frontend/ && cp -r /app/build/. /static/frontend/
+    command: sh -c "mkdir -p /static/frontend/ && cp -r /app/build/. /static/frontend/ && sleep infinity"
     volumes:
       - static_volume:/static
 
