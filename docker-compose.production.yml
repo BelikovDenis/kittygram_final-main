@@ -24,7 +24,7 @@ services:
       - SECRET_KEY=${SECRET_KEY}
       - STATIC_URL=/backend_static/
       - STATIC_ROOT=/static/collected_static
-    command: sh -c "python manage.py collectstatic --noinput && python manage.py migrate && gunicorn ..."
+    command: sh -c "python manage.py collectstatic --noinput && python manage.py migrate && gunicorn kittygram_backend.wsgi:application --bind 0.0.0.0:8000"
 
   frontend:
     image: denisbelikov/kittygram_frontend
