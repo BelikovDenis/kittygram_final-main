@@ -57,7 +57,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'kittygram_backend.wsgi.application'
 
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
@@ -65,13 +64,9 @@ DATABASES = {
         'USER': os.getenv('POSTGRES_USER', 'django'),
         'PASSWORD': os.getenv('POSTGRES_PASSWORD', ''),
         'HOST': os.getenv('DB_HOST', ''),
-        'PORT': os.getenv('DB_PORT', 5432)
+        'PORT': int(os.getenv('DB_PORT', 5432))  # Преобразуем в int
     }
 }
-
-
-# Password validation
-# https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -89,21 +84,16 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 LANGUAGE_CODE = 'ru-RU'
-
 TIME_ZONE = 'Europe/Moscow'
-
 USE_I18N = True
-
 USE_L10N = True
-
 USE_TZ = True
-
 
 STATIC_URL = os.getenv('STATIC_URL', '/static/')
 STATIC_ROOT = BASE_DIR / 'collected_static'
 
 MEDIA_URL = '/media/'
-MEDIA_ROOT = '/media'
+MEDIA_ROOT = BASE_DIR / 'media'  # Исправленный путь
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
@@ -111,12 +101,9 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated', 
     ],
-
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.TokenAuthentication',
     ],
-
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
     'PAGE_SIZE': 10,
-
 }
